@@ -1,0 +1,6 @@
+numpy==2.5.4
+scipy==1.18.1
+shapely==2.2.0
+pymunk==7.3.1
+pyvoronoi==1.2.8
+matplotlib==3.11.2

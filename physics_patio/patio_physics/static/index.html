@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patio · Physics studio</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="mark">◈</span><div><h1>Patio physics</h1><p>A little room to move.</p></div></div>
+    <div class="actions"><button id="undo" disabled>← Back <span id="undoCount">0</span></button><button id="check">Check clearances</button><button id="load">Open layout</button><button id="export">Save layout ↓</button><input id="file" type="file" accept=".json,application/json" hidden></div>
+    <div id="connection" class="badge">Connecting…</div>
+  </header>
+  <section class="recording-bar" aria-label="Trajectory recording"><div><strong id="recordStatus" role="status">Not recording</strong><span>Capture edits, physics, settings and undo.</span></div><button id="recordStart" disabled>Record trajectory</button><button id="recordFinish" disabled>Finish &amp; save trajectory ↓</button><a id="recordDownload" hidden>Download last trajectory ↓</a></section>
+  <main>
+    <section class="workbench">
+      <div class="simulation-bar"><div><span id="light" class="light"></span><strong id="mode">Paused</strong><span id="simTime">0.00 s</span></div><button id="hold" class="hold">Hold <kbd>space</kbd> to jiggle <span>or hold here</span></button></div>
+      <div class="boards">
+        <section class="board field-board"><div class="board-title"><h2>The field <span id="placed"></span></h2><span id="fieldDimensions">7.81 × 7.81 ft</span></div><div id="fieldWrap"><canvas id="field" aria-label="Patio field. Select and drag stones. Use arrow keys to translate, Q and E to rotate." tabindex="0"></canvas></div><div class="board-footer"><span id="scaleLabel"></span><span id="gapLabel">Simulation gap 0.50″ · required ½″</span></div></section>
+        <section class="board inventory-board"><div class="board-title"><h2>Available <span id="available"></span></h2><span>Same scale as field</span></div><div class="inventory-tools"><input id="filter" placeholder="Find a stone by ID" aria-label="Filter inventory by stone ID"><span>Drag a stone onto the field ↙</span></div><div id="inventoryScroll"><canvas id="inventory" aria-label="Available inventory. Drag a stone to the field."></canvas><div id="inventorySpacer"></div></div></section>
+      </div>
+      <div class="selection-bar"><div><span class="eyebrow">SELECTION</span><strong id="selectedLabel">Choose a stone</strong></div><div class="selection-tools"><button id="ccw" disabled title="Q">↶ 5°</button><button id="cw" disabled title="E">↷ 5°</button><label>Angle <input id="angle" type="number" step="1" disabled aria-label="Selected stone angle in degrees">°</label><button id="lock" disabled>Lock position</button><button id="delete" disabled class="danger">Return to inventory</button></div></div>
+      <div class="hint">Drag to move · Q / E to rotate · arrows to nudge ¼″ · Shift for 1″ nudges / 1° rotation · Delete to return · ⌘/Ctrl Z to undo</div>
+      <div id="message" role="status">Loading original geometry…</div>
+    </section>
+    <aside class="controls"><div class="controls-heading"><span class="eyebrow">SIMULATION</span><h2>Find the fit</h2><p>Hold space to move. Release to keep.</p></div><div id="sliders"></div><div class="note">Magnitude sets target travel. Force sets how strongly a piece follows it. Every run gets fresh, independent rhythms.</div><div class="note">Soft contacts may overlap. Use Check clearances before exporting a candidate. Large-gap goals are checked separately.</div></aside>
+  </main>
+  <div id="dragGhost" hidden><canvas></canvas></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

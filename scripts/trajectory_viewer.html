@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Golden run 29 · Patio replay</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#263b34;background:#f3f1e9;color-scheme:light}*{box-sizing:border-box}body{margin:0}main{max-width:1360px;margin:auto;padding:24px 32px}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}.eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:750;color:#68766b}h1{font-family:Georgia,serif;font-size:34px;font-weight:500;margin:5px 0}.sub{font-size:13px;color:#66736b}.badge{background:#e8dfbb;border:1px solid #d6c78c;padding:9px 13px;border-radius:30px;font-size:12px;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:24px}.board{background:#fcfbf7;border:1px solid #dcded1;border-radius:16px;padding:14px;min-width:0}svg{display:block;width:100%;max-height:calc(100vh - 240px);min-height:350px;aspect-ratio:1}aside{padding:12px 0}h2{font-size:24px;font-weight:600;margin:10px 0}.pill{font-size:11px;padding:5px 9px;background:#e4e9e1;border-radius:6px;display:inline-block;font-weight:700}.pill.placed{background:#f7ddbd;color:#8c450c}.pill.physics{background:#d8e9e1;color:#24634b}.desc{font-size:14px;line-height:1.55;min-height:70px}.metric{padding:14px 0;border-top:1px solid #d7dbd0;display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:13px}.metric strong{font-size:23px;font-weight:550}.metric small{font-size:12px;color:#6e776e}.legend{margin:22px 0;font-size:12px;line-height:2}.dot{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:7px;background:#d1c5a8}.dot.orange{background:#eb9640}.dot.green{background:#65b18b}.controls{margin-top:16px;display:flex;gap:10px;align-items:center}button{font:inherit;font-size:13px;cursor:pointer;border:1px solid #c8cfc2;border-radius:8px;background:#fcfbf7;color:#263b34;padding:10px 14px}button:hover{background:#e7ebe1}button:disabled{opacity:.4;cursor:default}.primary{background:#294e40;color:white;border-color:#294e40}.primary:hover{background:#38634f}.scrub{width:100%;accent-color:#365b48;margin:18px 0 7px}.ticks{display:flex;justify-content:space-between;color:#6e776e;font-size:11px}.footer{font-size:11px;line-height:1.6;color:#758073;margin-top:20px}.keys{margin-left:auto;color:#6e776e;font-size:12px}select{max-width:100%;width:100%;padding:10px;background:#fcfbf7;border:1px solid #c8cfc2;border-radius:7px;color:#263b34;margin-top:8px;font:inherit;font-size:13px}label{font-size:12px}input[type=checkbox]{accent-color:#365b48}#status{font-size:12px;color:#61745f;min-height:18px}.stone-label{font-size:.105px;text-anchor:middle;dominant-baseline:central;fill:#4b4e3d;pointer-events:none}.highlight-label{font-weight:800;fill:#66360d}.stone{fill:#d3c8ab;stroke:#827a65;stroke-width:.009;stroke-linejoin:round}.new{fill:#eea04f;stroke:#a65417;stroke-width:.018}.settled{fill:#86c6a4;stroke:#32795a;stroke-width:.018}@media(max-width:760px){main{padding:16px}.layout{grid-template-columns:1fr;gap:10px}header{align-items:start}.badge{display:none}h1{font-size:29px}svg{max-height:none;min-height:0}aside{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}aside .intro,aside .jump,aside .legend{grid-column:1/-1}.desc{min-height:0}.controls{flex-wrap:wrap}.keys{font-size:11px}.footer{margin-top:14px}}
+</style>
+<main>
+<header><div><div class="eyebrow">Quarter patio / trajectory replay</div><h1 id="title">Golden run 29</h1><div class="sub">Pre → placed → physics’d · one attempt at a time</div><label for="runJump" style="display:block;margin-top:14px">Choose run</label><select id="runJump" style="width:min(420px,100%);margin-top:5px" aria-label="Choose trajectory run"></select></div><div class="badge" id="peak"></div></header>
+<div class="layout"><section class="board" aria-label="Patio board"><svg id="board" role="img" aria-label="Current patio layout"></svg></section>
+<aside><div class="intro"><div class="eyebrow" id="attempt"></div><h2 id="stage" aria-live="polite"></h2><span id="pill" class="pill"></span><p class="desc" id="description"></p><div id="status"></div></div>
+<div class="metric"><span>Coverage</span><strong id="coverage"></strong></div>
+<div class="metric"><span>Stones</span><strong id="count"></strong></div>
+<div class="metric"><span>Interior gap <small>≤ 2″</small></span><strong id="interior"></strong></div>
+<div class="metric"><span>Edge gap <small>≤ 5″</small></span><strong id="edge"></strong></div>
+<div class="legend"><div><span class="dot"></span>Existing stones</div><div><span class="dot orange"></span>Placed / replacement pieces</div><div><span class="dot green"></span>Same pieces after physics</div><label><input type="checkbox" id="labels" checked> Show stone numbers</label></div>
+<div class="jump"><label for="attemptJump">Jump to attempt</label><select id="attemptJump"></select><button id="best" style="width:100%;margin-top:10px">Jump to best coverage</button></div></aside></div>
+<input id="scrub" class="scrub" type="range" min="0" value="0" aria-label="Replay frame">
+<div class="ticks"><span>Pre</span><span id="frameCount"></span><span>Final</span></div>
+<div class="controls"><button id="prev" aria-label="Previous state">← Previous</button><button id="play" class="primary">Play</button><button id="next" aria-label="Next state">Next →</button><span class="keys">← → states · Home / End · Space to play</span></div>
+<p class="footer">Original traced outlines and saved poses. “Placed” is the recorded pre-physics input; overlaps can be intentional. “Physics’d” is the measured endpoint, with no simulated in-between frames. Coverage and gaps appear only for audited states. Replacements remove the old piece and add the replacement together.</p>
+</main>
+<script id="trajectory-data" type="application/json">__TRAJECTORY_DATA__</script>
+<script>
+const archive=JSON.parse(document.getElementById('trajectory-data').textContent);
+let data={...archive,...archive.runs.find(r=>r.run===archive.initialRun)};
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+let index=0,timer=null;
+function el(tag,attrs={}){const n=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;}
+const board=$('board'),xs=data.patio.map(p=>p[0]),ys=data.patio.map(p=>p[1]),xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys),pad=.18;
+board.setAttribute('viewBox',`${xmin-pad} ${-ymax-pad} ${xmax-xmin+2*pad} ${ymax-ymin+2*pad}`);
+const defs=el('defs');board.append(defs);
+for(const [id,s] of Object.entries(data.stones)){defs.append(el('path',{id:'stone-'+id,d:s.outline.map((p,i)=>(i?'L':'M')+p[0]+','+p[1]).join('')+'Z'}));}
+const field=el('polygon',{points:data.patio.map(p=>`${p[0]},${-p[1]}`).join(' '),fill:'#e9e8dd',stroke:'#687665','stroke-width':'.018'});board.append(field);
+const pieces=el('g');board.append(pieces);
+for(const mode of ['golden','silver','normal']){
+ const runs=archive.runs.filter(r=>r.mode===mode);if(!runs.length)continue;
+ const group=document.createElement('optgroup');group.label=mode[0].toUpperCase()+mode.slice(1);
+ for(const r of runs){const o=document.createElement('option');o.value=r.run;o.textContent=`Run ${r.run} · ${r.mode} · peak ${r.frames[r.best].metrics.area_percent.toFixed(3)}%${r.complete?'':` · partial (${r.attempts}/30)`}`;group.append(o);}
+ $('runJump').append(group);
+}
+function setupRun(){
+$('title').textContent=`${data.mode[0].toUpperCase()+data.mode.slice(1)} run ${data.run}`;
+document.title=$('title').textContent+' · Patio replay';
+$('peak').textContent=`Peak ${data.frames[data.best].metrics.area_percent.toFixed(3)}% · attempt ${data.frames[data.best].attempt}`;
+$('scrub').max=data.frames.length-1;
+$('runJump').value=data.run;
+$('attemptJump').replaceChildren();
+for(let a=0;a<=data.attempts;a++){const o=document.createElement('option');o.value=data.frames.findIndex(f=>f.attempt===a);o.textContent=a===0?'Pre · starting board':`Attempt ${a}`;$('attemptJump').append(o);}
+}
+function render(){
+ const f=data.frames[index],hl=new Set(f.highlight);pieces.replaceChildren();
+ const ids=Object.keys(f.poses).sort((a,b)=>Number(hl.has(a))-Number(hl.has(b)));
+ for(const id of ids){const p=f.poses[id],g=el('g',{transform:`translate(${p[0]},${-p[1]}) rotate(${-p[2]*180/Math.PI})`}),u=el('use',{href:'#stone-'+id,transform:'scale(1,-1)',class:'stone'+(hl.has(id)?(f.stage==='Placed'?' new':' settled'):'')});
+ const title=el('title');title.textContent=`Stone ${id}${hl.has(id)?' · selected this attempt':''}`;g.append(title,u);pieces.append(g);
+ if($('labels').checked){const [lx,ly]=data.stones[id].label,c=Math.cos(p[2]),s=Math.sin(p[2]),t=el('text',{x:p[0]+c*lx-s*ly,y:-(p[1]+s*lx+c*ly),class:'stone-label'+(hl.has(id)?' highlight-label':'')});t.textContent=id;pieces.append(t);}}
+ $('attempt').textContent=f.attempt?`Attempt ${f.attempt} / ${data.attempts}`:'Starting arrangement';$('stage').textContent=f.stage;
+ $('pill').className='pill '+(f.stage==='Placed'?'placed':f.stage==='Physics’d'?'physics':'');
+ $('pill').textContent=f.stage==='Pre'?`${Object.keys(f.poses).length} starting stones`:f.stage==='Placed'?(f.removed.length?'Replacement / reposition':'Insertion'):f.stage==='Physics’d'?(f.accepted?'Accepted · settled':'Rejected endpoint'):f.stage;
+ const different=f.removed.filter(id=>!hl.has(id)),same=f.removed.filter(id=>hl.has(id));
+ $('description').textContent=f.stage==='Pre'?'The retained board before the first attempt. Step forward to see each proposal and its physics result.':f.stage==='No placement'?'The bounded search found no eligible proposal. The board is unchanged.':f.stage==='Rolled back'?'The previous physics result was rejected. The retained board is restored.':`${same.length?'Reposition stone '+same.join(', '):different.length?'Replace '+different.join(', ')+' with '+f.highlight.join(' + '):'Place stone'+(f.highlight.length>1?'s ':' ')+f.highlight.join(' + ')}. ${f.stage==='Placed'?'Highlighted in orange, before relaxation.':'Highlighted in green after relaxation; surrounding stones may also have moved.'}`;
+ const m=f.metrics;$('coverage').textContent=m?m.area_percent.toFixed(3)+'%':'—';$('count').textContent=Object.keys(f.poses).length;
+ $('interior').textContent=m?.gaps?.largest_interior_inches!=null?m.gaps.largest_interior_inches.toFixed(2)+'″':'—';$('edge').textContent=m?.gaps?.largest_edge_inches!=null?m.gaps.largest_edge_inches.toFixed(2)+'″':'—';
+ $('status').textContent=!m?'Pre-physics · not audited':m.clearance.valid?'✓ Half-inch clearance passed':'Clearance failed';
+ $('scrub').value=index;$('frameCount').textContent=`State ${index+1} / ${data.frames.length}`;$('prev').disabled=index===0;$('next').disabled=index===data.frames.length-1;
+ $('attemptJump').value=data.frames.findIndex(x=>x.attempt===f.attempt);
+ board.setAttribute('aria-label',`${f.stage}, attempt ${f.attempt}, ${Object.keys(f.poses).length} stones`);
+}
+function stop(){clearInterval(timer);timer=null;$('play').textContent='Play';}
+function go(i){index=Math.max(0,Math.min(data.frames.length-1,Number(i)));render();if(index===data.frames.length-1)stop();}
+function togglePlay(){if(timer){stop();return;}if(index===data.frames.length-1)go(0);timer=setInterval(()=>go(index+1),1100);$('play').textContent='Pause';}
+$('prev').onclick=()=>{stop();go(index-1);};$('next').onclick=()=>{stop();go(index+1);};$('play').onclick=togglePlay;
+$('scrub').oninput=e=>{stop();go(e.target.value);};$('attemptJump').onchange=e=>{stop();go(e.target.value);};$('best').onclick=()=>{stop();go(data.best);};$('labels').onchange=render;
+$('runJump').onchange=e=>{stop();data={...archive,...archive.runs.find(r=>r.run===Number(e.target.value))};index=0;setupRun();render();e.target.blur();};
+document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey||['SELECT','INPUT','TEXTAREA'].includes(e.target.tagName))return;
+ if(['ArrowLeft','ArrowRight','Home','End',' '].includes(e.key)){e.preventDefault();if(e.key===' ')togglePlay();else{stop();go(e.key==='Home'?0:e.key==='End'?data.frames.length-1:index+(e.key==='ArrowRight'?1:-1));}}});
+function openLinkedState(){
+ const params=new URLSearchParams(location.hash.slice(1)),run=archive.runs.find(r=>r.run===Number(params.get('run')));
+ if(!run)return;stop();data={...archive,...run};setupRun();
+ const attempt=Number(params.get('attempt')),stage=params.get('stage');
+ const found=data.frames.findIndex(f=>f.attempt===attempt&&(!stage||(stage==='physics'?f.stage==='Physics’d':f.stage===stage)));
+ index=found<0?0:found;render();
+}
+setupRun();render();openLinkedState();window.addEventListener('hashchange',openLinkedState);
+</script>
+</html>
