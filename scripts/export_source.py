@@ -23,6 +23,7 @@ def source_files():
         'physics_patio/requirements.txt', 'physics_patio/README.md',
         'analysis/aggressive_trajectories/config.json',
         'analysis/allocation_campaigns/README.md', 'analysis/full_trajectories/README.md',
+        'analysis/adaptive_performance/README.md',
         'analysis/physics_trajectories/README.md', 'analysis/physics_trajectories/requirements.txt',
     ):
         path = ROOT/name

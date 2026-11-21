@@ -1,5 +1,52 @@
 # Quarter patio: sampling complete construction-to-physics trajectories
 
+## Performance audit before production — November 21, 2026
+
+The four completed adaptive campaigns spent 63.62% of sampling worker time on
+proposal search, 30.19% on physical evaluations including endpoint measurements,
+0.67% on native construction, 0.57% on separate handoff audits and 4.95% on
+worker/controller overhead. This construction-only production path does not
+invoke the GPU batch scorer from earlier classical searches.
+
+Profiles identify polygon buffering in selection and original-polygon nearest
+queries in the complete gap audit as major costs. An exact boundary-segment
+distance index, retaining zero distances inside/on polygons, reduced one full
+dual-scale gap audit from 18.95 to 5.40 seconds, with exactly equal returned
+candidates and measurements. Reusing exact buffer boundaries within one fixed
+board assessment gives a smaller selection improvement. No original outlines,
+diagrams, tolerances, physical protocols or acceptance gates are changed.
+
+Unprofiled matched full-operation replays: representative selection **43.272 ->
+41.901 seconds**; late selection **17.119 -> 17.045 seconds**; representative
+physical evaluation **26.198 -> 12.032 seconds**. All complete saved result values
+match exactly. Additional held-release and rejected late-board physical replays
+also match. These are request-level checks, not a measured whole-campaign
+speedup. Historical cost shares suggest approximately 18% less worker time per
+equivalent work, with substantial uncertainty; fixed-budget production uses the
+savings for more attempts rather than reducing its 600-worker-hour cap.
+
+Ten-worker fixed-work throughput was about 1,025 request pairs/hour in a clean
+repeat; fourteen reached about 1,112, but consumed roughly 29% more worker wall
+time per matched pair. Keep the agreed ten-stream/ten-worker allocation for the
+current worker-time budget. These short measurements do not establish optimal
+concurrency under every workload or long-duration thermal conditions.
+
+The GPU's existing dense classical scoring path is inactive here. The late
+selection sample spent under 1% of its time in FFT convolution; simulation
+advancement was about one of 36 profiled physical-evaluation seconds. Moving
+those small slices to the GPU has limited end-to-end headroom. Faster GPU
+geometry/planning remains possible future work, requiring a separate backend
+and validation rather than enabling the old scorer in this policy.
+
+**127 focused checks pass**, including new exact-distance/cache regressions and
+the existing geometry, physics, planning, aggressive policy, allocation and
+transaction checks. A separate fresh bounded adaptive campaign completed two
+accepted physical transactions and passed its full verifier. The production
+wrapper now uses `examples/adaptive_production_20261121_v2/`; the unstarted v1
+preparation is retained because code pins changed. The 72-hour run is still
+**not launched**. Full methods, timing limits and reproduction commands:
+[`analysis/adaptive_performance/README.md`](analysis/adaptive_performance/README.md).
+
 ## Completed allocation comparison — November 21, 2026
 
 All 12 prospective campaigns completed, and all 12 final integrity verifiers
@@ -70,7 +117,7 @@ bash scripts/run_adaptive_production.sh
 
 It selects adaptive only, ten streams at 60 worker-hours each, ten workers, a
 72-hour elapsed window and seed 20261121. Outputs are separate under
-`examples/adaptive_production_20261121_v1/`. Add `--status`, `--stop`, or `--verify`
+`examples/adaptive_production_20261121_v2/`. Add `--status`, `--stop`, or `--verify`
 for inspection, safe stopping or final verification; rerun the original command
 to resume. Preparation verified local input, code, library and native-constructor
 pins, with zero construction or physics jobs executed. All 14 allocation checks

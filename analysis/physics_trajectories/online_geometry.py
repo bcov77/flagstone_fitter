@@ -58,9 +58,9 @@ def assess(board,subject_id,reference_neighbors,patio,pocket,roi,inventory,stabi
     totals=dict(wall_corner_risk_sqft=0.,rigid_pocket_risk_sqft=0.,wall_excess_sqft=0.,
                 subject_indent_sqft=0.,stable_neighbor_exposure_sqft=0.,flexible_residual_sqft=0.,
                 verified_fillable_regions=0,unsearched_regions=0)
-    remaining=dict(inventory);repair_free=free;allocations=[];placed=[]
+    remaining=dict(inventory);repair_free=free;allocations=[];placed=[];buffered_edges={}
     for index,(patch,core) in enumerate(regions):
-        owners,caps=region_owners(patch,board,subject_id,wl,gap,stability,config)
+        owners,caps=region_owners(patch,board,subject_id,wl,gap,stability,config,buffered_edges)
         roles=[v['role'] for v in owners.values()]
         flexible=[sid for sid,v in owners.items() if v['role']=='neighbor']
         wall_count=roles.count('wall');rigid=not flexible and any(r in roles for r in ('wall','locked','subject'))

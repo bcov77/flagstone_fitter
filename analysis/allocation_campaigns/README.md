@@ -2,6 +2,11 @@
 
 ## Adaptive-only production — November 21
 
+The production wrapper now uses the profiled, exact-geometry optimizations and
+a fresh v2 output. See [the performance audit](../adaptive_performance/README.md)
+for timings, GPU assessment, worker-count tradeoffs and validation. The original
+unstarted v1 preparation remains preserved.
+
 The completed comparison favors adaptive as the next production allocation;
 see the results in `first_real_patio_quarter_full_trajectories.md`. Run the new
 prepared search from the repository root:
@@ -12,7 +17,7 @@ bash scripts/run_adaptive_production.sh
 
 The wrapper selects `--policies adaptive --repeats 10 --hours 60 --workers 10
 --runtime-hours 72 --seed 20261121`, with a new output directory at
-`examples/adaptive_production_20261121_v1/`. This means 600 allocated worker-hours
+`examples/adaptive_production_20261121_v2/`. This means 600 allocated worker-hours
 across ten streams, plus separately timed final verification. It uses the
 unchanged adaptive batch/promotion and numerical policies described below.
 It is prepared, with no simulation jobs started. The wrapper runs in the

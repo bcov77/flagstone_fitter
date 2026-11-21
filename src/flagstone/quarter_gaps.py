@@ -30,6 +30,35 @@ def _diagram(patio, stones, scale):
     return diagram
 
 
+def _stone_distances(stones, points):
+    """Exact point-to-polygon distances with a finer boundary-segment index.
+
+    Large irregular polygons make nearest-tree queries repeatedly scan long
+    boundaries. Outside a polygon its distance is the minimum distance to its
+    original segments. Covered points must first retain polygon distance zero,
+    including points on boundaries; hole interiors remain outside the polygon.
+    No simplification, rasterization or change to the Voronoi diagram is used.
+    """
+    distances = np.full(len(points), np.inf)
+    if not stones or not len(points):
+        return distances
+    covered = np.zeros(len(points), dtype=bool)
+    segments = []
+    for stone in stones:
+        shapely.prepare(stone)
+        covered |= shapely.covers(stone, points)
+        for ring in [stone.exterior, *stone.interiors]:
+            xy = np.asarray(ring.coords)
+            segments.append(np.stack([xy[:-1], xy[1:]], axis=1))
+    distances[covered] = 0.
+    outside = np.flatnonzero(~covered)
+    if len(outside):
+        tree = shapely.STRtree(shapely.linestrings(np.concatenate(segments)))
+        pairs, ds = tree.query_nearest(points[outside], return_distance=True, all_matches=False)
+        distances[outside[pairs[0]]] = ds
+    return distances
+
+
 def gap_candidates(patio, stones, *, scale=100_000_000, local_only=True):
     """Enumerate gap candidates from segment sites, not sampled boundary points."""
     if not stones:
@@ -60,11 +89,7 @@ def gap_candidates(patio, stones, *, scale=100_000_000, local_only=True):
         raise ValueError('No Voronoi vertices')
     pp = shapely.points(points)
     boundary_ds = shapely.distance(pp, patio.boundary)
-    stone_ds = np.full(len(pp), np.inf)
-    if stones:
-        tree = shapely.STRtree(stones)
-        pairs, ds = tree.query_nearest(pp, return_distance=True, all_matches=False)
-        stone_ds[pairs[0]] = ds
+    stone_ds = _stone_distances(stones, pp)
     result = []
     inside = shapely.covers(patio, pp)
     for index, point in enumerate(points):

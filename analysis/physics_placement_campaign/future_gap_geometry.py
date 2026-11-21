@@ -77,13 +77,17 @@ def residual_regions(free,roi,config):
     return sorted(out,key=lambda pair:-pair[0].area)
 
 
-def region_owners(patch,board,subject_id,wall_lines,gap,stability,config):
+def region_owners(patch,board,subject_id,wall_lines,gap,stability,config,buffered_edges=None):
+    # Callers may share this lazy cache only across regions of the same board
+    # and clearance. Shapely geometries are immutable; exact buffers are reused.
+    if buffered_edges is None:buffered_edges={}
     samples=[profile(ring,config['boundary_step_ft']) for ring in [patch.exterior,*patch.interiors]]
     points=np.concatenate([p for p,_,_ in samples]);weights=np.concatenate([np.full(len(p),step) for p,step,_ in samples])
     owners={};physical=np.zeros(len(points),dtype=bool)
     for sid,g in board.items():
         if g.distance(patch)>gap+.01:continue
-        edge=g.buffer(gap).boundary
+        if sid not in buffered_edges:buffered_edges[sid]=g.buffer(gap).boundary
+        edge=buffered_edges[sid]
         hit=np.asarray(shapely.distance(points,edge))<.002
         if weights[hit].sum()>=config['owner_min_length_ft']:
             role='subject' if sid==subject_id else ('locked' if sid in config['locked_stones'] else 'neighbor')

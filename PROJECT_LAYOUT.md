@@ -48,6 +48,11 @@ pinned production code; existing runs intentionally reject changed code.
 
 ## Three-day production command on Brian's existing machine
 
+The [November 21 performance audit](analysis/adaptive_performance/README.md)
+records profiles, exact-geometry speedups, worker scaling and the GPU assessment.
+The wrapper now uses a fresh v2 output directory with the optimized numerical
+code. The original v1 preparation remains unstarted and preserved.
+
 From the original project root:
 
 ```bash
@@ -63,7 +68,7 @@ five. Total sampling allocation is 600 worker-hours, with transaction-boundary
 overshoot retained; final verification is additional overhead within the window.
 This scales repetition of the tested policy without changing the physics policy.
 
-Outputs: `examples/adaptive_production_20261121_v1/`. The shell wrapper prevents
+Outputs: `examples/adaptive_production_20261121_v2/`. The shell wrapper prevents
 idle sleep on macOS. Keep the machine powered and the terminal session running;
 the wrapper is a foreground command. It does not prevent shutdown or lid sleep.
 Use another terminal for inspection:
